@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Harry Potter Vocabulary Fullscreen Cards</title>
+<style>
+  body, html {
+    height: 100%;
+    margin: 0;
+    font-family: "Times New Roman", serif;
+    overflow: hidden;
+    background-color: #000;
+  }
+
+  .card {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-size: cover;
+    background-position: center center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    padding: 40px 20px 120px; /* Extra bottom padding for nav */
+    text-align: center;
+    user-select: none;
+  }
+
+  .phrase-container {
+    display: inline-flex;
+    align-items: center;
+    max-width: 90%;
+    background-color: rgba(0,0,0,0.6);
+    padding: 15px 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.8);
+    user-select: none;
+  }
+
+  .phrase {
+    font-size: 1.8rem;
+    font-weight: bold;
+    font-family: "Georgia", serif;
+    color: #fff;
+    line-height: 1.3;
+    flex-grow: 1;
+    user-select: text;
+  }
+
+  /* Кнопка с пером */
+  .pen-icon {
+    width: 26px;
+    height: 26px;
+    margin-left: 15px;
+    fill: #ddd;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: fill 0.3s ease, transform 0.3s ease;
+  }
+
+  .pen-icon:hover {
+    fill: #ffeb3b;
+    transform: scale(1.2);
+  }
+  .pen-icon.open {
+    fill: #ffeb3b;
+    transform: scale(1.2) rotate(20deg);
+  }
+
+  .definition {
+    margin-top: 25px;
+    max-width: 80%;
+    font-size: 1.4rem;
+    font-family: "Arial", sans-serif;
+    line-height: 1.5;
+    color: #eee;
+    background-color: rgba(0,0,0,0.7);
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.9);
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.4s ease, max-height 0.4s ease;
+    user-select: text;
+  }
+
+  .definition.show {
+    opacity: 1;
+    max-height: 500px;
+  }
+
+  /* Для слов, где нужно избежать перекрытия кнопок и длинных определений с прокруткой */
+  .definition.no-overlap {
+    padding-bottom: 80px;
+  }
+
+  .scrollable-definition {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .navigation {
+    position: fixed;
+    bottom: 30px;
+    width: 100%;
+    text-align: center;
+    user-select: none;
+    z-index: 100;
+  }
+
+  .nav-button {
+    background: rgba(0,0,0,0.6);
+    border: none;
+    color: white;
+    font-size: 1.6rem;
+    font-family: "Arial", sans-serif;
+    padding: 12px 25px;
+    margin: 0 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0,0,0,0.8);
+    transition: background 0.3s ease;
+  }
+
+  .nav-button:hover {
+    background: rgba(0,0,0,0.85);
+  }
+</style>
+</head>
+<body>
+
+<div class="card" id="card" role="region" aria-live="polite" aria-atomic="true">
+  <div class="phrase-container" id="phraseContainer" tabindex="0" aria-controls="definition" aria-expanded="false">
+    <div class="phrase" id="phrase">
+      <!-- Фраза -->
+    </div>
+    <svg class="pen-icon" id="penIcon" viewBox="0 0 24 24" aria-label="Show definition" role="button" tabindex="0" focusable="true" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12.3 2.7a1 1 0 0 0-1.6 1.2l.9 1.2-7.9 7.9-1.2-.9A1 1 0 0 0 2.4 12l4.2 4.2a1 1 0 0 0 1.3 0l7.9-7.9 1.2.9a1 1 0 0 0 1.6-1.2l-4.8-6.4zM18 13.1v6.8a1 1 0 0 1-1 1h-6.7a1 1 0 0 1-1-1v-6.8l3.2-3.2 5.5 5.5z"/>
+    </svg>
+  </div>
+  <div class="definition" id="definition" aria-live="polite" aria-hidden="true">
+    <!-- Определение -->
+  </div>
+</div>
+
+<div class="navigation">
+  <button class="nav-button" id="prevBtn" aria-label="Previous word">← Prev</button>
+  <button class="nav-button" id="nextBtn" aria-label="Next word">Next →</button>
+</div>
+
+<script>
+  const words = [
+    {
+      phrase: "Cultivate a deep empathy",
+      definition: "To develop or nurture a strong ability to understand and share the feelings of others.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Maintain loyalty to someone",
+      definition: "To continue to be faithful, supportive, and devoted to a person over time.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Exhibit a mix of vulnerability and determination",
+      definition: "To show or display a combination of openness to emotional sensitivity and firmness of purpose.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Be insecure",
+      definition: "To feel uncertain, anxious, or lacking confidence in oneself or one’s abilities.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Embody intellectual rigor and conscientiousness",
+      definition: "To represent or express qualities of strict intellectual discipline and responsible attention to duties.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Struggle with insecurity and self-doubt",
+      definition: "To have trouble coping with feelings of not being good enough and lacking self-assurance.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Demonstrate prudence",
+      definition: "To show careful judgment and wise decision-making, especially to avoid risks or mistakes.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Experience internal conflict",
+      definition: "To go through a mental or emotional struggle caused by having opposing thoughts or feelings within oneself.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Value love and forgiveness",
+      definition: "To regard love and forgiveness as important and to hold them in high esteem.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Show emotional growth and develop maturity over time",
+      definition: "To demonstrate improvement in understanding and managing emotions, becoming more emotionally mature over time.",
+      avoidOverlap: true
+    },
+    {
+      phrase: "Reflect compassion and pragmatism",
+      definition: "To show kindness and practical, realistic thinking in actions or decisions.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Have a profound sense of responsibility",
+      definition: "To deeply feel and acknowledge a strong duty or obligation to act carefully and reliably.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Experience emotional ambivalence",
+      definition: "To go through mixed or contradictory emotions about someone or something at the same time.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Embody emotional sincerity",
+      definition: "To genuinely express honest and heartfelt emotions.",
+      avoidOverlap: false
+    },
+    {
+      phrase: "Showcase the tension between self-interest and duty",
+      definition: "To clearly display or highlight the conflict or struggle between acting for one’s own benefit and fulfilling one’s moral or social obligations.",
+      avoidOverlap: true
+    }
+  ];
+
+  const backgrounds = [
+    'https://i.postimg.cc/L4ZtvqSv/img2-akspic-ru-skazki-barda-bidla-garri-potter-korichnevyj-cvet-drevesina-liniya-1080x1920.jpg',
+    'https://i.postimg.cc/hGjxmvML/img3-akspic-ru-garri-potter-estetika-garri-potter-dom-slizerin-estetika-drako-malfoj-1080x1920.jpg',
+    'https://i.postimg.cc/XqMyt8WL/img3-akspic-ru-germiona-grejndzher-garri-potter-i-proklyatoe-ditya-garri-potter-dom-slizerin-glaz-10.jpg',
+    'https://i.postimg.cc/NfkrPmz8/img2-akspic-ru-garri-potter-garri-potter-funkoverse-dc-pop-funkoverse-strategicheskaya-igra-strategi.jpg',
+    'https://i.postimg.cc/MTBn0QBQ/harry-potter-hogwarts-art-background.jpg'
+  ];
+
+  let currentIndex = 0;
+  const phraseEl = document.getElementById('phrase');
+  const definitionEl = document.getElementById('definition');
+  const cardEl = document.getElementById('card');
+  const phraseContainer = document.getElementById('phraseContainer');
+  const penIcon = document.getElementById('penIcon');
+
+  function showWord(index) {
+    const word = words[index];
+    phraseEl.textContent = word.phrase;
+    definitionEl.textContent = word.definition;
+    definitionEl.classList.remove('show');
+    definitionEl.setAttribute('aria-hidden', 'true');
+    phraseContainer.setAttribute('aria-expanded', 'false');
+    penIcon.classList.remove('open');
+
+    cardEl.style.backgroundImage = `url('${backgrounds[index % backgrounds.length]}')`;
+
+    if(word.avoidOverlap){
+      definitionEl.classList.add('no-overlap', 'scrollable-definition');
+    } else {
+      definitionEl.classList.remove('no-overlap', 'scrollable-definition');
+    }
+  }
+
+  // Показывать/скрывать определение по клику на иконку пера
+  penIcon.addEventListener('click', () => {
+    const isOpen = penIcon.classList.toggle('open');
+    if (isOpen) {
+      definitionEl.classList.add('show');
+      definitionEl.setAttribute('aria-hidden', 'false');
+      phraseContainer.setAttribute('aria-expanded', 'true');
+    } else {
+      definitionEl.classList.remove('show');
+      definitionEl.setAttribute('aria-hidden', 'true');
+      phraseContainer.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Для доступности - по Enter/Space на иконке тоже открывать/закрывать определение
+  penIcon.addEventListener('keydown', e => {
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      penIcon.click();
+    }
+  });
+
+  // Навигация Prev/Next
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % words.length;
+    showWord(currentIndex);
+  });
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + words.length) % words.length;
+    showWord(currentIndex);
+  });
+
+  // Инициализация первого слова
+  showWord(currentIndex);
+
+</script>
+
+</body>
+</html>
