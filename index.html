@@ -299,6 +299,25 @@
   showWord(currentIndex);
 
 </script>
-
+<!-- Кнопка скачивания полного проекта -->
+<div style="position: fixed; bottom: 85px; width: 100%; text-align: center; z-index: 101;">
+  <a href="project.zip" download style="
+    display: inline-block;
+    background: rgba(107, 76, 29, 0.9);
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1.3rem;
+    padding: 10px 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(107, 76, 29, 0.8);
+    text-decoration: none;
+    user-select: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  " onmouseover="this.style.background='rgba(107,76,29,1)'" onmouseout="this.style.background='rgba(107, 76, 29, 0.9)'">
+    Скачать весь проект
+  </a>
+</div>
 </body>
 </html>
