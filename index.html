@@ -231,11 +231,11 @@
   ];
 
   const backgrounds = [
-    'https://i.postimg.cc/L4ZtvqSv/img2-akspic-ru-skazki-barda-bidla-garri-potter-korichnevyj-cvet-drevesina-liniya-1080x1920.jpg',
-    'https://i.postimg.cc/hGjxmvML/img3-akspic-ru-garri-potter-estetika-garri-potter-dom-slizerin-estetika-drako-malfoj-1080x1920.jpg',
-    'https://i.postimg.cc/XqMyt8WL/img3-akspic-ru-germiona-grejndzher-garri-potter-i-proklyatoe-ditya-garri-potter-dom-slizerin-glaz-10.jpg',
-    'https://i.postimg.cc/NfkrPmz8/img2-akspic-ru-garri-potter-garri-potter-funkoverse-dc-pop-funkoverse-strategicheskaya-igra-strategi.jpg',
-    'https://i.postimg.cc/MTBn0QBQ/harry-potter-hogwarts-art-background.jpg'
+    'img/harry-potter-hogwarts-art-background.jpg',
+    'img/img2.akspic.ru-garri_potter-garri_potter_funkoverse-dc_pop_funkoverse_strategicheskaya_igra-strategicheskaya_igra-komiksov-1080x1920.jpg',
+    'img/img2.akspic.ru-skazki_barda_bidla-garri_potter-korichnevyj_cvet-drevesina-liniya-1080x1920.jpg',
+    'img/img3.akspic.ru-garri_potter_estetika-garri_potter-dom_slizerin-estetika-drako_malfoj-1080x1920.jpg',
+    'img/img3.akspic.ru-germiona_grejndzher-garri_potter_i_proklyatoe_ditya-garri_potter-dom_slizerin-glaz-1080x1920.jpg'
   ];
 
   let currentIndex = 0;
@@ -263,7 +263,6 @@
     }
   }
 
-  // Показывать/скрывать определение по клику на иконку пера
   penIcon.addEventListener('click', () => {
     const isOpen = penIcon.classList.toggle('open');
     if (isOpen) {
@@ -277,7 +276,6 @@
     }
   });
 
-  // Для доступности - по Enter/Space на иконке тоже открывать/закрывать определение
   penIcon.addEventListener('keydown', e => {
     if(e.key === 'Enter' || e.key === ' '){
       e.preventDefault();
@@ -285,7 +283,6 @@
     }
   });
 
-  // Навигация Prev/Next
   document.getElementById('nextBtn').addEventListener('click', () => {
     currentIndex = (currentIndex + 1) % words.length;
     showWord(currentIndex);
@@ -295,9 +292,7 @@
     showWord(currentIndex);
   });
 
-  // Инициализация первого слова
   showWord(currentIndex);
-
 </script>
 </body>
 </html>
